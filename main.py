@@ -222,11 +222,11 @@ class TermuxToolkit:
         self.clear_screen()
         # Top Bar
         print(f"{Colors.C}╔{'═'*(self.cols-2)}╗")
-        title = f" {Colors.R}● {Colors.W}CZUCA ADVANCED TERMINAL {Colors.R}● "
+        title = f" {Colors.R}● {Colors.W}CZUCA TERMINAL {Colors.R}● "
         pad = (self.cols - 29) // 2
         print(f"{Colors.C}║{' '*pad}{title}{' '*pad}{Colors.C}║")
         print(f"{Colors.C}╠{'═'*(self.cols-2)}╣")
-        print(f"{Colors.C}║ {Colors.BK}[NET]: {Colors.G}SECURE  {Colors.BK}[STATUS]: {Colors.Y}ONLINE  {Colors.BK}[DEV]: {Colors.W}CZUCA{Colors.C}{' '*(self.cols-45)}║")
+        print(f"{Colors.C}║ {Colors.BK}[NET]: {Colors.G}SECURE  {Colors.BK}[STATUS]: {Colors.Y}ONLINE  {Colors.BK}[DEV]: {Colors.W}LEVIATHAN{Colors.C}{' '*(self.cols-45)}║")
         
         # Banner Print
         print(f"{Colors.C}╚{'═'*(self.cols-2)}╝{Colors.RESET}\n")
@@ -259,7 +259,7 @@ class TermuxToolkit:
             
             # --- INPUT TERMINAL ---
             try:
-                print(f"\n {Colors.C}┌──[ {Colors.R}CZUCA {Colors.W}ROOT {Colors.C}]")
+                print(f"\n {Colors.C}┌──[ {Colors.R}CZUCA {Colors.W}TERMINAL {Colors.C}]")
                 choice = input(f" {Colors.C}└─➤ {Colors.Y}EXECUTE :: {Colors.W}").strip()
                 print(Colors.RESET, end="")
                 
