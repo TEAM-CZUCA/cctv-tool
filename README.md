@@ -9,7 +9,7 @@
 ---
 
 ## ⚡ ABOUT THE TOOL
-**CZUCA CCTV EXPLORER** is a specialized surveillance toolkit developed by **TEAM-CZUCA**. This tool allows security enthusiasts and researchers to explore publicly available CCTV feeds, IP cameras, and global security streams directly from the Termux terminal. It is built with a high-performance interface, focusing on speed and ease of use.
+**CZUCA CCTV EXPLORER** is a specialized surveillance toolkit developed by **LEVIATHAN DRIFT 419**. This tool allows security enthusiasts and researchers to explore publicly available CCTV feeds, IP cameras, and global security streams directly from the Termux terminal. It is built with a high-performance interface, focusing on speed and ease of use.
 
 ---
 
@@ -52,7 +52,7 @@ Stay updated with our latest releases and get support from our community:
 This toolkit is for Educational Purposes Only. It is designed to access publicly available CCTV streams. Accessing private surveillance without permission is illegal and unethical. TEAM-CZUCA is not responsible for any misuse, illegal activities, or damage caused by this tool. Use it responsibly.
 ```
 <p align="center">
-<b>Developed with Power by TEAM-CZUCA 🚀</b><br>
+<b>Developed by LEVIATHAN 🚀</b><br>
 <i>"Watching the world, one frame at a time."</i>
 </p>
 
