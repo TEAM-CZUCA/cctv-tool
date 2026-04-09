@@ -11,17 +11,11 @@ import subprocess
 # ==========================================
 # ⚙️ CONFIGURATION & PATHS
 # ==========================================
-# GitHub Raw URLs
+# GitHub URLs (For fallback or data)
 REMOTE_BANNER_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/banner.txt"
 REMOTE_LIST_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/wordlist/main/list.txt"
-
-# Core Script URL (To Auto-Update This Python File)
-REMOTE_CORE_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/main.py"
-
-# Facebook Page URL
 FB_PAGE_URL = "https://www.facebook.com/CyberZulfiqarUnderCoverAgency"
 
-# Termux Secure Storage Paths
 HOME_DIR = os.environ.get('HOME', os.path.expanduser('~'))
 APP_DIR = os.path.join(HOME_DIR, '.czuca_toolkit')
 
@@ -73,12 +67,10 @@ class TermuxToolkit:
         sys.stdout.write(f"\r{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text} - {Colors.GREEN}Done!{' '*10}{Colors.RESET}\n")
 
     def open_facebook_page(self):
-        """টুলটি যতবার রান হবে, ততবারই Facebook Page Open করবে"""
         self.clear_screen()
         print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Redirecting to TEAM-CZUCA Official Facebook Page...{Colors.RESET}")
         time.sleep(1)
         try:
-            # সরাসরি Android Intent/App এ খোলার চেষ্টা
             subprocess.run(['termux-open-url', FB_PAGE_URL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception:
             try:
@@ -86,7 +78,7 @@ class TermuxToolkit:
                 webbrowser.open(FB_PAGE_URL)
             except:
                 pass
-        time.sleep(2)
+        time.sleep(1)
 
     def show_banner(self):
         self.clear_screen()
@@ -102,72 +94,78 @@ class TermuxToolkit:
                 print(f"{color}{Colors.BOLD}{line}{Colors.RESET}")
         print()
 
-    def fetch_resources(self, is_update=False):
-        if is_update:
-            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Initiating Live Deep Update...{Colors.RESET}")
-            self.animated_loading("Connecting to TEAM-CZUCA Servers...", 1.5)
-        else:
-            self.animated_loading("Initializing System & Checking Servers...", 1.0)
-
-        # 1. Fetch Banner
+    def fetch_resources(self):
+        """প্রাথমিক ডাটা লোড করার জন্য"""
+        # Load Banner
         try:
-            req_banner = urllib.request.Request(REMOTE_BANNER_URL, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_banner, timeout=5) as response:
-                self.banner_text = response.read().decode('utf-8')
-                with open(BANNER_FILE, 'w', encoding='utf-8') as f:
-                    f.write(self.banner_text)
-        except Exception:
             if os.path.exists(BANNER_FILE):
                 with open(BANNER_FILE, 'r', encoding='utf-8') as f:
                     self.banner_text = f.read()
+            else:
+                req_banner = urllib.request.Request(REMOTE_BANNER_URL, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req_banner, timeout=5) as response:
+                    self.banner_text = response.read().decode('utf-8')
+                    with open(BANNER_FILE, 'w', encoding='utf-8') as f:
+                        f.write(self.banner_text)
+        except:
+            self.banner_text = "=== TEAM-CZUCA TOOLKIT ==="
 
-        # 2. Fetch List
-        try:
-            req_list = urllib.request.Request(REMOTE_LIST_URL, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_list, timeout=5) as response:
-                content = response.read().decode('utf-8')
-                self._parse_data(content)
-                with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                if is_update:
-                    self.animated_loading("Downloading Latest Payloads...", 1.2)
-        except (urllib.error.URLError, Exception) as e:
-            if is_update:
-                print(f"{Colors.RED}[!] Connection Failed: {e}{Colors.RESET}")
-                time.sleep(2)
+        # Load List
+        if os.path.exists(LOCAL_LIST):
             self._load_local_data()
-
-        # 3. Fetch Core Script (Auto-Update main.py itself)
-        if is_update:
-            self.animated_loading("Updating Core Software (main.py)...", 1.5)
+        else:
             try:
-                req_core = urllib.request.Request(REMOTE_CORE_URL, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req_core, timeout=5) as response:
-                    core_code = response.read().decode('utf-8')
-                    # Verification Check (যাতে ফাইল এম্পটি না হয়)
-                    if "class TermuxToolkit:" in core_code:
-                        with open(os.path.abspath(__file__), 'w', encoding='utf-8') as f:
-                            f.write(core_code)
-                        print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Core Script Updated Successfully!{Colors.RESET}")
-            except Exception:
-                pass
+                req_list = urllib.request.Request(REMOTE_LIST_URL, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req_list, timeout=5) as response:
+                    content = response.read().decode('utf-8')
+                    self._parse_data(content)
+                    with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
+                        f.write(content)
+            except:
+                print(f"{Colors.RED}[!] Error: No Internet connection to fetch list.{Colors.RESET}")
+                sys.exit(1)
 
-        if is_update:
-            print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} System Update Completed!{Colors.RESET}")
-            time.sleep(1)
+    def update_toolkit(self):
+        """Git Pull এর মাধ্যমে টুল আপডেট করার মেথড"""
+        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Checking for updates via GitHub...{Colors.RESET}")
+        self.animated_loading("Syncing with TEAM-CZUCA Repository", 2.0)
+        
+        try:
+            # বর্তমান ডিরেক্টরি কি গিট রিপোজিটরি কি না চেক করা
+            if os.path.exists(".git"):
+                # Git Pull কমান্ড চালানো
+                process = subprocess.run(['git', 'pull'], capture_output=True, text=True)
+                
+                if "Already up to date" in process.stdout:
+                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} You are already using the latest version!{Colors.RESET}")
+                else:
+                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Successfully updated to latest version!{Colors.RESET}")
+                    # আপডেট হওয়ার পর ব্যানার এবং লিস্ট নতুন করে ডাউনলোড করা (যদি কোনো চেইঞ্জ থাকে)
+                    self.refresh_files_after_git()
+            else:
+                print(f"{Colors.RED}[!] Error: .git folder not found. Please 'git clone' the repo.{Colors.RESET}")
+        except Exception as e:
+            print(f"{Colors.RED}[!] Update Failed: {e}{Colors.RESET}")
+        
+        time.sleep(2)
+
+    def refresh_files_after_git(self):
+        """Git Pull এর পর এক্সট্রা ফাইল রিফ্রেশ করার জন্য"""
+        try:
+            # Banner update
+            urllib.request.urlretrieve(REMOTE_BANNER_URL, BANNER_FILE)
+            # List update
+            urllib.request.urlretrieve(REMOTE_LIST_URL, LOCAL_LIST)
+        except:
+            pass
 
     def _load_local_data(self):
-        if os.path.exists(LOCAL_LIST):
-            try:
-                with open(LOCAL_LIST, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    self._parse_data(content)
-            except Exception as e:
-                print(f"{Colors.RED}[!] Failed to read cache: {e}{Colors.RESET}")
-                sys.exit(1)
-        else:
-            print(f"{Colors.RED}[!] Fatal Error: No internet and no offline cache found.{Colors.RESET}")
-            sys.exit(1)
+        try:
+            with open(LOCAL_LIST, 'r', encoding='utf-8') as f:
+                content = f.read()
+                self._parse_data(content)
+        except:
+            pass
 
     def _parse_data(self, raw_text):
         self.data_list =[]
@@ -178,28 +176,15 @@ class TermuxToolkit:
             if '|' in line:
                 name, url = line.split('|', 1)
                 self.data_list.append({"name": name.strip(), "url": url.strip()})
-        
-        if not self.data_list:
-            print(f"{Colors.RED}[!] Error: No data found.{Colors.RESET}")
-            sys.exit(1)
 
     def open_link(self, url):
-        if url.startswith("http://") or url.startswith("https://"):
-            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Launching target URL...{Colors.RESET}")
-            time.sleep(0.5)
-            try:
-                subprocess.run(['termux-open-url', url], check=True)
-                print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened in System Browser!{Colors.RESET}")
-            except Exception:
-                try:
-                    import webbrowser
-                    webbrowser.open(url)
-                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened!{Colors.RESET}")
-                except Exception as e:
-                    print(f"{Colors.RED}[!] Failed to open browser: {e}{Colors.RESET}")
-        else:
-            print(f"{Colors.RED}[!] Invalid URL target: {url}{Colors.RESET}")
-        time.sleep(2)
+        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Launching target...{Colors.RESET}")
+        try:
+            subprocess.run(['termux-open-url', url], check=True)
+        except:
+            import webbrowser
+            webbrowser.open(url)
+        time.sleep(1)
 
     def print_menu_item(self, index, name, speed=0.01):
         idx_str = f"{index:02d}"
@@ -216,61 +201,45 @@ class TermuxToolkit:
             
             # --- TARGET LIST ---
             title_1 = f"\n{Colors.RED} ━━━ {Colors.WHITE}✦ TARGET LIST ✦ {Colors.RED}━━━{Colors.RESET}\n\n"
-            if self.first_run:
-                self.typewriter(title_1, 0.005)
-            else:
-                sys.stdout.write(title_1)
+            if self.first_run: self.typewriter(title_1, 0.005)
+            else: sys.stdout.write(title_1)
             
             for index, item in enumerate(self.data_list, start=1):
                 self.print_menu_item(index, item['name'])
             
             # --- SYSTEM OPTIONS ---
             title_2 = f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n\n"
-            if self.first_run:
-                self.typewriter(title_2, 0.005)
-            else:
-                sys.stdout.write(title_2)
+            if self.first_run: self.typewriter(title_2, 0.005)
+            else: sys.stdout.write(title_2)
 
-            self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit (Code + Data){Colors.RESET}")
+            self.print_menu_item(88, f"{Colors.YELLOW}Full Update (Git Pull & Sync){Colors.RESET}")
             self.print_menu_item(0, f"{Colors.RED}Exit System{Colors.RESET}")
             print()
             
             self.first_run = False 
 
-            # --- INPUT ---
             try:
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
-                print(Colors.RESET, end="")
                 
                 if choice == '00' or choice == '0':
-                    self.typewriter(f"\n{Colors.RED}[!] Terminating Session. Goodbye!{Colors.RESET}\n", 0.02)
                     sys.exit(0)
                 
                 elif choice == '88':
                     # ==========================================
-                    # 🔄 AUTO UPDATE & RESTART
+                    # 🔄 GIT PULL UPDATE & RESTART
                     # ==========================================
-                    self.fetch_resources(is_update=True)
-                    print(f"\n{Colors.RED}[{Colors.GREEN}↻{Colors.RED}]{Colors.WHITE} Applying Core Updates & Restarting System...{Colors.RESET}")
-                    time.sleep(1.5)
-                    
-                    # Hard Restart the Python File (Will trigger FB page open again)
+                    self.update_toolkit()
+                    # টুলের কোড পরিবর্তন হয়ে থাকলে সেটি পুনরায় লোড করতে স্ক্রিপ্টটি রিস্টার্ট হবে
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
                 
                 elif choice.isdigit():
                     choice_idx = int(choice)
                     if 1 <= choice_idx <= len(self.data_list):
-                        selected_item = self.data_list[choice_idx - 1]
-                        self.open_link(selected_item['url'])
+                        self.open_link(self.data_list[choice_idx - 1]['url'])
                     else:
-                        print(f"{Colors.RED}[!] Invalid Target ID.{Colors.RESET}")
+                        print(f"{Colors.RED}[!] Invalid Choice.{Colors.RESET}")
                         time.sleep(1)
-                else:
-                    print(f"{Colors.RED}[!] Invalid Input.{Colors.RESET}")
-                    time.sleep(1)
-                    
             except KeyboardInterrupt:
-                print(f"\n\n{Colors.RED}[!] Force Exit Triggered...{Colors.RESET}")
                 sys.exit(0)
 
 # ==========================================
@@ -278,10 +247,9 @@ class TermuxToolkit:
 # ==========================================
 def main():
     app = TermuxToolkit()
-    app.open_facebook_page() # Every time it runs, FB page will open
-    app.clear_screen()
-    app.fetch_resources()    # Then fetch resources
-    app.show_menu()          # Finally show menu
+    app.open_facebook_page() 
+    app.fetch_resources()    
+    app.show_menu()          
 
 if __name__ == "__main__":
     main()
