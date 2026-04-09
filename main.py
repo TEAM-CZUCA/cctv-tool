@@ -4,6 +4,8 @@
 import os
 import sys
 import time
+import shutil
+import platform
 import urllib.request
 import urllib.error
 import subprocess
@@ -11,17 +13,12 @@ import subprocess
 # ==========================================
 # ⚙️ CONFIGURATION & PATHS
 # ==========================================
-# GitHub Raw URLs
 REMOTE_BANNER_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/banner.txt"
 REMOTE_LIST_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/wordlist/main/list.txt"
-
-# Core Script URL (To Auto-Update This Python File)
 REMOTE_CORE_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/main.py"
 
-# Facebook Page URL
 FB_PAGE_URL = "https://www.facebook.com/CyberZulfiqarUnderCoverAgency"
 
-# Termux Secure Storage Paths
 HOME_DIR = os.environ.get('HOME', os.path.expanduser('~'))
 APP_DIR = os.path.join(HOME_DIR, '.czuca_toolkit')
 
@@ -32,16 +29,26 @@ LOCAL_LIST = os.path.join(APP_DIR, "list.txt")
 BANNER_FILE = os.path.join(APP_DIR, "banner.txt")
 
 # ==========================================
-# 🎨 NEON COLOR SYSTEM (ANSI)
+# 🎨 UCA COLORS (ANSI)
 # ==========================================
 class Colors:
-    RED = '\033[38;5;196m'
-    WHITE = '\033[38;5;231m'
-    GREEN = '\033[38;5;46m'
-    YELLOW = '\033[38;5;226m'
-    CYAN = '\033[38;5;51m'
-    BOLD = '\033[1m'
+    R = '\033[1;31m'  # Red
+    G = '\033[1;32m'  # Green
+    C = '\033[1;36m'  # Cyan
+    Y = '\033[1;33m'  # Yellow
+    P = '\033[1;35m'  # Purple
+    W = '\033[1;37m'  # White
+    BK = '\033[1;30m' # Black
     RESET = '\033[0m'
+
+system_os = platform.system()
+
+def get_cols():
+    try:
+        cols, _ = shutil.get_terminal_size()
+    except:
+        cols = 60
+    return cols
 
 # ==========================================
 # 🧠 TOOLKIT CORE CLASS
@@ -50,35 +57,39 @@ class TermuxToolkit:
     def __init__(self):
         self.data_list = []
         self.banner_text = ""
-        self.first_run = True 
+        self.cols = get_cols()
 
     def clear_screen(self):
-        os.system('clear' if os.name == 'posix' else 'cls')
+        if system_os == "Windows": os.system('cls')
+        else: os.system('clear')
 
-    def typewriter(self, text, speed=0.005):
-        for char in text:
-            sys.stdout.write(char)
-            sys.stdout.flush()
-            time.sleep(speed)
-
-    def animated_loading(self, text, duration=1.5):
-        chars =["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-        end_time = time.time() + duration
-        idx = 0
-        while time.time() < end_time:
-            sys.stdout.write(f"\r{Colors.RED}[{Colors.WHITE}{chars[idx]}{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text}{Colors.RESET}")
-            sys.stdout.flush()
-            idx = (idx + 1) % len(chars)
-            time.sleep(0.08)
-        sys.stdout.write(f"\r{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text} - {Colors.GREEN}Done!{' '*10}{Colors.RESET}\n")
+    # --- 1. UCA INTRO BOOT ANIMATION ---
+    def intro_animation(self):
+        self.clear_screen()
+        print(f"\n{Colors.BK} [INIT] ESTABLISHING CONNECTION TO CZUCA SERVER...{Colors.RESET}")
+        time.sleep(0.5)
+        
+        logs =[
+            "LOADING_CZUCA_MODULES",
+            "VERIFYING_USER_PERMISSIONS",
+            "FETCHING_THEME_DATABASE",
+            "OPTIMIZING_NETWORK_TUNNEL",
+            "ACCESS_GRANTED_CORE_SYSTEM"
+        ]
+        
+        for log in logs:
+            sys.stdout.write(f"\r {Colors.C}:: SYSTEM_BOOT >> {log:<30} {Colors.Y}[WAIT]")
+            time.sleep(0.2)
+            sys.stdout.write(f"\r {Colors.C}:: SYSTEM_BOOT >> {log:<30} {Colors.G}[OK]  \n")
+            time.sleep(0.1)
+        
+        time.sleep(0.5)
 
     def open_facebook_page(self):
-        """টুলটি যতবার রান হবে, ততবারই Facebook Page Open করবে"""
         self.clear_screen()
-        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Redirecting to TEAM-CZUCA Official Facebook Page...{Colors.RESET}")
-        time.sleep(1)
+        print(f"\n{Colors.C}[*]{Colors.W} INITIATING REDIRECT TO CZUCA HEADQUARTERS...{Colors.RESET}")
+        time.sleep(0.5)
         try:
-            # সরাসরি Android Intent/App এ খোলার চেষ্টা
             subprocess.run(['termux-open-url', FB_PAGE_URL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception:
             try:
@@ -86,88 +97,92 @@ class TermuxToolkit:
                 webbrowser.open(FB_PAGE_URL)
             except:
                 pass
-        time.sleep(2)
+        time.sleep(1.5)
 
-    def show_banner(self):
-        self.clear_screen()
-        if not self.banner_text:
-            self.banner_text = "=== TEAM-CZUCA ADVANCED TOOLKIT ==="
-
-        lines = self.banner_text.strip().splitlines()
-        for i, line in enumerate(lines):
-            color = Colors.RED if i % 2 == 0 else Colors.WHITE
-            if self.first_run:
-                self.typewriter(f"{color}{Colors.BOLD}{line}{Colors.RESET}\n", speed=0.002)
-            else:
-                print(f"{color}{Colors.BOLD}{line}{Colors.RESET}")
-        print()
-
-    def fetch_resources(self, is_update=False):
-        if is_update:
-            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Initiating Live Deep Update...{Colors.RESET}")
-            self.animated_loading("Connecting to TEAM-CZUCA Servers...", 1.5)
-        else:
-            self.animated_loading("Initializing System & Checking Servers...", 1.0)
-
-        # 1. Fetch Banner
+    def silent_startup_check(self):
+        """Silently load data into memory on boot"""
+        sys.stdout.write(f"\r {Colors.Y}:: MOUNTING LOCAL DATABASES...{Colors.RESET} ")
+        sys.stdout.flush()
+        
+        # Load Banner
         try:
-            req_banner = urllib.request.Request(REMOTE_BANNER_URL, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_banner, timeout=5) as response:
-                self.banner_text = response.read().decode('utf-8')
-                with open(BANNER_FILE, 'w', encoding='utf-8') as f:
-                    f.write(self.banner_text)
-        except Exception:
             if os.path.exists(BANNER_FILE):
                 with open(BANNER_FILE, 'r', encoding='utf-8') as f:
                     self.banner_text = f.read()
+        except: pass
 
-        # 2. Fetch List
-        try:
-            req_list = urllib.request.Request(REMOTE_LIST_URL, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_list, timeout=5) as response:
-                content = response.read().decode('utf-8')
-                self._parse_data(content)
-                with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                if is_update:
-                    self.animated_loading("Downloading Latest Payloads...", 1.2)
-        except (urllib.error.URLError, Exception) as e:
-            if is_update:
-                print(f"{Colors.RED}[!] Connection Failed: {e}{Colors.RESET}")
-                time.sleep(2)
-            self._load_local_data()
-
-        # 3. Fetch Core Script (Auto-Update main.py itself)
-        if is_update:
-            self.animated_loading("Updating Core Software (main.py)...", 1.5)
-            try:
-                req_core = urllib.request.Request(REMOTE_CORE_URL, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req_core, timeout=5) as response:
-                    core_code = response.read().decode('utf-8')
-                    # Verification Check (যাতে ফাইল এম্পটি না হয়)
-                    if "class TermuxToolkit:" in core_code:
-                        with open(os.path.abspath(__file__), 'w', encoding='utf-8') as f:
-                            f.write(core_code)
-                        print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Core Script Updated Successfully!{Colors.RESET}")
-            except Exception:
-                pass
-
-        if is_update:
-            print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} System Update Completed!{Colors.RESET}")
-            time.sleep(1)
-
-    def _load_local_data(self):
+        # Load List
         if os.path.exists(LOCAL_LIST):
             try:
                 with open(LOCAL_LIST, 'r', encoding='utf-8') as f:
                     content = f.read()
                     self._parse_data(content)
+            except: pass
+            
+        sys.stdout.write(f"\r {Colors.G}:: MOUNTING LOCAL DATABASES...[OK] {' '*10}{Colors.RESET}\n")
+        time.sleep(0.5)
+
+    # --- 2. UCA UPDATE LOADER (5 STEPS ANIMATION) ---
+    def install_loaders_update(self):
+        self.clear_screen()
+        print(f"\n{Colors.G}[*] INITIALIZING UPDATE PROTOCOLS...{Colors.RESET}\n")
+        time.sleep(0.5)
+        
+        # Update Steps Mapping
+        steps =[
+            ("CONFIGURING SECURE TUNNEL", lambda: time.sleep(0.5)),
+            ("DOWNLOADING HIGH-RES ASSETS", self._fetch_banner),
+            ("FETCHING TARGET PAYLOADS", self._fetch_list),
+            ("INJECTING CORE KERNEL", self._fetch_core),
+            ("FINALIZING SYSTEM VERIFICATION", lambda: time.sleep(0.5))
+        ]
+        
+        for step_name, func in steps:
+            # Fake Spinner Animation for visual effect
+            for i in range(10): # Spinnig for 1 second
+                chars = "/-\\|"
+                sys.stdout.write(f"\r {Colors.C}[PROCESS] {step_name}... {Colors.Y}{chars[i%4]} {Colors.RESET}")
+                sys.stdout.flush()
+                time.sleep(0.1)
+            
+            # Execute actual download/update task
+            try:
+                func()
+                sys.stdout.write(f"\r {Colors.C}[PROCESS] {step_name:<30} {Colors.G}[DONE]{' '*5}\n")
             except Exception as e:
-                print(f"{Colors.RED}[!] Failed to read cache: {e}{Colors.RESET}")
-                sys.exit(1)
-        else:
-            print(f"{Colors.RED}[!] Fatal Error: No internet and no offline cache found.{Colors.RESET}")
-            sys.exit(1)
+                sys.stdout.write(f"\r {Colors.C}[PROCESS] {step_name:<30} {Colors.R}[FAIL]{' '*5}\n")
+            time.sleep(0.2)
+        
+        print(f"\n{Colors.BK} [LOG] SYSTEM REBOOT REQUIRED...{Colors.RESET}")
+        time.sleep(1.5)
+        # Execute Auto-Restart
+        os.execv(sys.executable,[sys.executable, os.path.abspath(__file__)])
+
+    # --- UPDATE BACKGROUND WORKERS ---
+    def _fetch_banner(self):
+        req = urllib.request.Request(REMOTE_BANNER_URL, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            self.banner_text = response.read().decode('utf-8')
+            with open(BANNER_FILE, 'w', encoding='utf-8') as f:
+                f.write(self.banner_text)
+
+    def _fetch_list(self):
+        req = urllib.request.Request(REMOTE_LIST_URL, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            content = response.read().decode('utf-8')
+            self._parse_data(content)
+            with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
+                f.write(content)
+
+    def _fetch_core(self):
+        req = urllib.request.Request(REMOTE_CORE_URL, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            core_code = response.read().decode('utf-8')
+            if "class TermuxToolkit:" in core_code:
+                with open(os.path.abspath(__file__), 'w', encoding='utf-8') as f:
+                    f.write(core_code)
+            else:
+                raise Exception("Corrupt Core")
 
     def _parse_data(self, raw_text):
         self.data_list =[]
@@ -180,108 +195,114 @@ class TermuxToolkit:
                 self.data_list.append({"name": name.strip(), "url": url.strip()})
         
         if not self.data_list:
-            print(f"{Colors.RED}[!] Error: No data found.{Colors.RESET}")
-            sys.exit(1)
+            self.data_list = [{"name": "No Data Found. Update Toolkit (88).", "url": ""}]
 
+    # --- SYSTEM LINKS ---
     def open_link(self, url):
         if url.startswith("http://") or url.startswith("https://"):
-            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Launching target URL...{Colors.RESET}")
+            print(f"\n {Colors.C}┌──[ {Colors.P}TARGETING{Colors.C} ]")
+            print(f" {Colors.C}└─➤ {Colors.W}Launching URL...{Colors.RESET}")
             time.sleep(0.5)
             try:
-                subprocess.run(['termux-open-url', url], check=True)
-                print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened in System Browser!{Colors.RESET}")
+                subprocess.run(['termux-open-url', url], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                print(f"     {Colors.G}[✔] TARGET OPENED IN BROWSER{Colors.RESET}")
             except Exception:
                 try:
                     import webbrowser
                     webbrowser.open(url)
-                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened!{Colors.RESET}")
+                    print(f"     {Colors.G}[✔] TARGET OPENED{Colors.RESET}")
                 except Exception as e:
-                    print(f"{Colors.RED}[!] Failed to open browser: {e}{Colors.RESET}")
+                    print(f"     {Colors.R}[!] FAILED: {e}{Colors.RESET}")
         else:
-            print(f"{Colors.RED}[!] Invalid URL target: {url}{Colors.RESET}")
+            print(f"\n {Colors.R}[!] INVALID URL: {url}{Colors.RESET}")
         time.sleep(2)
 
-    def print_menu_item(self, index, name, speed=0.01):
-        idx_str = f"{index:02d}"
-        line = f"   {Colors.RED}[{Colors.WHITE}{idx_str}{Colors.RED}]{Colors.WHITE} ➢  {Colors.GREEN}{name}{Colors.RESET}\n"
-        if self.first_run:
-            self.typewriter(line, speed)
-            time.sleep(0.05)
+    # --- UCA THEMED UI ---
+    def print_uca_header(self):
+        self.clear_screen()
+        # Top Bar
+        print(f"{Colors.C}╔{'═'*(self.cols-2)}╗")
+        title = f" {Colors.R}● {Colors.W}CZUCA ADVANCED TERMINAL {Colors.R}● "
+        pad = (self.cols - 29) // 2
+        print(f"{Colors.C}║{' '*pad}{title}{' '*pad}{Colors.C}║")
+        print(f"{Colors.C}╠{'═'*(self.cols-2)}╣")
+        print(f"{Colors.C}║ {Colors.BK}[NET]: {Colors.G}SECURE  {Colors.BK}[STATUS]: {Colors.Y}ONLINE  {Colors.BK}[DEV]: {Colors.W}CZUCA{Colors.C}{' '*(self.cols-45)}║")
+        
+        # Banner Print
+        print(f"{Colors.C}╚{'═'*(self.cols-2)}╝{Colors.RESET}\n")
+        
+        if self.banner_text:
+            lines = self.banner_text.strip().splitlines()
+            for i, line in enumerate(lines):
+                c = Colors.R if i % 2 == 0 else Colors.W
+                print(f"{c}{Colors.W}{line}{Colors.RESET}")
         else:
-            sys.stdout.write(line)
+            print(f"{Colors.C}=== TEAM-CZUCA ADVANCED TOOLKIT ==={Colors.RESET}")
+        
+        print(f"\n{Colors.BK}{'='*self.cols}{Colors.RESET}")
 
     def show_menu(self):
         while True:
-            self.show_banner()
+            self.cols = get_cols() # Recalculate terminal size dynamically
+            self.print_uca_header()
             
-            # --- TARGET LIST ---
-            title_1 = f"\n{Colors.RED} ━━━ {Colors.WHITE}✦ TARGET LIST ✦ {Colors.RED}━━━{Colors.RESET}\n\n"
-            if self.first_run:
-                self.typewriter(title_1, 0.005)
-            else:
-                sys.stdout.write(title_1)
-            
+            # --- TARGET MENU ---
+            print(f"\n {Colors.C}┌──[ {Colors.P}PAYLOAD LIST{Colors.C} ]")
             for index, item in enumerate(self.data_list, start=1):
-                self.print_menu_item(index, item['name'])
+                print(f" {Colors.C}├─[{Colors.W}{index:02d}{Colors.C}] {Colors.G}➢ {Colors.W}{item['name']}{Colors.RESET}")
             
-            # --- SYSTEM OPTIONS ---
-            title_2 = f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n\n"
-            if self.first_run:
-                self.typewriter(title_2, 0.005)
-            else:
-                sys.stdout.write(title_2)
-
-            self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit (Code + Data){Colors.RESET}")
-            self.print_menu_item(0, f"{Colors.RED}Exit System{Colors.RESET}")
-            print()
+            # --- OPTIONS ---
+            print(f" {Colors.C}│")
+            print(f" {Colors.C}├──[ {Colors.P}SYSTEM OVERRIDE{Colors.C} ]")
+            print(f" {Colors.C}├─[{Colors.Y}88{Colors.C}] {Colors.Y}➢ SYSTEM UPDATE (CORE + ASSETS){Colors.RESET}")
+            print(f" {Colors.C}└─[{Colors.R}00{Colors.C}] {Colors.R}➢ TERMINATE CONNECTION{Colors.RESET}")
             
-            self.first_run = False 
-
-            # --- INPUT ---
+            # --- INPUT TERMINAL ---
             try:
-                choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
+                print(f"\n {Colors.C}┌──[ {Colors.R}CZUCA {Colors.W}ROOT {Colors.C}]")
+                choice = input(f" {Colors.C}└─➤ {Colors.Y}EXECUTE :: {Colors.W}").strip()
                 print(Colors.RESET, end="")
                 
                 if choice == '00' or choice == '0':
-                    self.typewriter(f"\n{Colors.RED}[!] Terminating Session. Goodbye!{Colors.RESET}\n", 0.02)
+                    print(f"\n {Colors.R}[!] CONNECTION TERMINATED. LOGGING OUT...{Colors.RESET}\n")
                     sys.exit(0)
                 
                 elif choice == '88':
-                    # ==========================================
-                    # 🔄 AUTO UPDATE & RESTART
-                    # ==========================================
-                    self.fetch_resources(is_update=True)
-                    print(f"\n{Colors.RED}[{Colors.GREEN}↻{Colors.RED}]{Colors.WHITE} Applying Core Updates & Restarting System...{Colors.RESET}")
-                    time.sleep(1.5)
-                    
-                    # Hard Restart the Python File (Will trigger FB page open again)
-                    os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
+                    # Trigger UCA 5-Step Update Loader
+                    self.install_loaders_update()
                 
                 elif choice.isdigit():
                     choice_idx = int(choice)
                     if 1 <= choice_idx <= len(self.data_list):
-                        selected_item = self.data_list[choice_idx - 1]
-                        self.open_link(selected_item['url'])
+                        self.open_link(self.data_list[choice_idx - 1]['url'])
                     else:
-                        print(f"{Colors.RED}[!] Invalid Target ID.{Colors.RESET}")
+                        print(f" {Colors.R}[!] UNKNOWN TARGET ID.{Colors.RESET}")
                         time.sleep(1)
                 else:
-                    print(f"{Colors.RED}[!] Invalid Input.{Colors.RESET}")
+                    print(f" {Colors.R}[!] COMMAND NOT RECOGNIZED.{Colors.RESET}")
                     time.sleep(1)
                     
             except KeyboardInterrupt:
-                print(f"\n\n{Colors.RED}[!] Force Exit Triggered...{Colors.RESET}")
+                print(f"\n\n {Colors.R}[!] FORCE EXIT TRIGGERED. ABORTING...{Colors.RESET}")
                 sys.exit(0)
 
 # ==========================================
-# 🚀 MAIN EXECUTION
+# 🚀 MAIN EXECUTION SYSTEM
 # ==========================================
 def main():
     app = TermuxToolkit()
-    app.open_facebook_page() # Every time it runs, FB page will open
-    app.clear_screen()
-    app.fetch_resources()    # Then fetch resources
-    app.show_menu()          # Finally show menu
+    
+    # 1. UCA Intro Boot Animation
+    app.intro_animation()
+    
+    # 2. Open FB Page (Always on boot)
+    app.open_facebook_page()
+    
+    # 3. Check and load internal database smoothly
+    app.silent_startup_check()
+    
+    # 4. Display Premium Terminal Menu
+    app.show_menu()
 
 if __name__ == "__main__":
     main()
