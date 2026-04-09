@@ -67,7 +67,7 @@ class TermuxToolkit:
 
     def open_facebook_page(self):
         self.clear_screen()
-        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Redirecting to TEAM-CZUCA Official Facebook Page...{Colors.RESET}")
+        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Follow TEAM-CZUCA Official Facebook Page...{Colors.RESET}")
         time.sleep(1)
         try:
             subprocess.run(['termux-open-url', FB_PAGE_URL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
