@@ -56,10 +56,10 @@ Internet: High-speed connection recommended for live streams.
 👥 CONNECT WITH TEAM-CZUCA
 Stay updated with our latest releases and get support from our community:
 🔗 Official Facebook Page
-```
+
 ⚠️ DISCLAIMER
 This toolkit is for Educational Purposes Only. It is designed to access publicly available CCTV streams. Accessing private surveillance without permission is illegal and unethical. TEAM-CZUCA is not responsible for any misuse, illegal activities, or damage caused by this tool. Use it responsibly.
-
+```
 <p align="center">
 <b>Developed with Power by TEAM-CZUCA 🚀</b><br>
 <i>"Watching the world, one frame at a time."</i>
