@@ -13,19 +13,17 @@ REMOTE_LIST_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/wordlist/main/li
 
 LOCAL_LIST = "list.txt"
 BANNER_FILE = "banner.txt"
-MENU_WIDTH = 50  # Box Width for Premium UI
 
 # ==========================================
-# 🎨 PREMIUM COLOR SYSTEM (ANSI)
+# 🎨 NEON COLOR SYSTEM (ANSI)
 # ==========================================
 class Colors:
-    RED = '\033[38;5;196m'
-    GREEN = '\033[38;5;46m'
-    YELLOW = '\033[38;5;226m'
-    BLUE = '\033[38;5;33m'
-    CYAN = '\033[38;5;51m'
-    MAGENTA = '\033[38;5;201m'
-    WHITE = '\033[38;5;231m'
+    RED = '\033[38;5;196m'      # Pure Neon Red
+    WHITE = '\033[38;5;231m'    # Pure White
+    GREEN = '\033[38;5;46m'     # Matrix Green
+    YELLOW = '\033[38;5;226m'   # Warning Yellow
+    CYAN = '\033[38;5;51m'      # Neon Blue/Cyan
+    DARK_GRAY = '\033[38;5;240m'# Divider Gray
     BOLD = '\033[1m'
     RESET = '\033[0m'
 
@@ -36,34 +34,49 @@ class TermuxToolkit:
     def __init__(self):
         self.data_list = []
         self.banner_text = ""
+        self.first_run = True # To animate only on startup
 
     def clear_screen(self):
         os.system('clear' if os.name == 'posix' else 'cls')
 
-    def animated_loading(self, text, duration=2):
-        """Premium Spinner Animation"""
-        chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    def typewriter(self, text, speed=0.005):
+        """Premium Typewriter Animation"""
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            time.sleep(speed)
+
+    def animated_loading(self, text, duration=1.5):
+        """Cyberpunk Style Spinner"""
+        chars =["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
         end_time = time.time() + duration
         idx = 0
         while time.time() < end_time:
-            sys.stdout.write(f"\r{Colors.CYAN}[{chars[idx]}]{Colors.RESET} {Colors.YELLOW}{text}{Colors.RESET}")
+            sys.stdout.write(f"\r{Colors.RED}[{Colors.WHITE}{chars[idx]}{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text}{Colors.RESET}")
             sys.stdout.flush()
             idx = (idx + 1) % len(chars)
-            time.sleep(0.1)
-        sys.stdout.write(f"\r{Colors.GREEN}[✔]{Colors.RESET} {Colors.WHITE}{text} - Success!{' '*10}{Colors.RESET}\n")
+            time.sleep(0.08)
+        sys.stdout.write(f"\r{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text} - {Colors.GREEN}Done!{' '*10}{Colors.RESET}\n")
 
     def show_banner(self):
         self.clear_screen()
-        if self.banner_text:
-            print(f"{Colors.MAGENTA}{Colors.BOLD}{self.banner_text}{Colors.RESET}")
-        else:
-            print(f"{Colors.CYAN}{Colors.BOLD}=== TEAM-CZUCA ADVANCED TOOLKIT ==={Colors.RESET}")
+        if not self.banner_text:
+            self.banner_text = "=== TEAM-CZUCA ADVANCED TOOLKIT ==="
+
+        # Red & White Mixed Banner Animation
+        lines = self.banner_text.strip().splitlines()
+        for i, line in enumerate(lines):
+            # Alternate colors: Red -> White -> Red
+            color = Colors.RED if i % 2 == 0 else Colors.WHITE
+            if self.first_run:
+                self.typewriter(f"{color}{Colors.BOLD}{line}{Colors.RESET}\n", speed=0.002)
+            else:
+                print(f"{color}{Colors.BOLD}{line}{Colors.RESET}")
         print()
 
     def fetch_resources(self, is_update=False):
-        """Fetch files from GitHub with Premium Loading"""
         if is_update:
-            print(f"\n{Colors.CYAN}[*] Initiating Live Update...{Colors.RESET}")
+            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Initiating Live Update...{Colors.RESET}")
         
         self.animated_loading("Connecting to TEAM-CZUCA Servers...", 1.5)
 
@@ -87,7 +100,7 @@ class TermuxToolkit:
                 self._parse_data(content)
                 with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
                     f.write(content)
-                self.animated_loading("Downloading Latest Payloads...", 1.5)
+                self.animated_loading("Downloading Latest Payloads...", 1.2)
         except (urllib.error.URLError, Exception) as e:
             print(f"{Colors.RED}[!] Network fail: {e}{Colors.RESET}")
             print(f"{Colors.YELLOW}[*] Switching to Offline Mode...{Colors.RESET}")
@@ -95,7 +108,7 @@ class TermuxToolkit:
             self._load_local_data()
 
         if is_update:
-            print(f"{Colors.GREEN}[+] Update Completed Successfully!{Colors.RESET}")
+            print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Update Completed Successfully!{Colors.RESET}")
             time.sleep(1.5)
 
     def _load_local_data(self):
@@ -104,7 +117,7 @@ class TermuxToolkit:
                 with open(LOCAL_LIST, 'r', encoding='utf-8') as f:
                     content = f.read()
                     self._parse_data(content)
-                    print(f"{Colors.GREEN}[+] Loaded from Offline Cache.{Colors.RESET}")
+                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Loaded from Offline Cache.{Colors.RESET}")
                     time.sleep(1)
             except Exception as e:
                 print(f"{Colors.RED}[!] Failed to read cache: {e}{Colors.RESET}")
@@ -129,72 +142,71 @@ class TermuxToolkit:
 
     def open_link(self, url):
         if url.startswith("http://") or url.startswith("https://"):
-            print(f"\n{Colors.CYAN}[*] Launching target URL...{Colors.RESET}")
+            print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Launching target URL...{Colors.RESET}")
             time.sleep(0.5)
             try:
                 subprocess.run(['termux-open-url', url], check=True)
-                print(f"{Colors.GREEN}[+] Target Opened in System Browser!{Colors.RESET}")
+                print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened in System Browser!{Colors.RESET}")
             except Exception:
                 try:
                     import webbrowser
                     webbrowser.open(url)
-                    print(f"{Colors.GREEN}[+] Target Opened!{Colors.RESET}")
+                    print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Target Opened!{Colors.RESET}")
                 except Exception as e:
                     print(f"{Colors.RED}[!] Failed to open browser: {e}{Colors.RESET}")
         else:
             print(f"{Colors.RED}[!] Invalid URL target: {url}{Colors.RESET}")
         time.sleep(2)
 
-    def draw_box_line(self, left, right, middle_char="─"):
-        """Helper to draw premium box borders"""
-        print(f"{Colors.BLUE}{left}{middle_char * MENU_WIDTH}{right}{Colors.RESET}")
+    def print_menu_item(self, index, name, speed=0.01):
+        """Helper to print menu items with animation"""
+        idx_str = f"{index:02d}"
+        line = f"   {Colors.RED}[{Colors.WHITE}{idx_str}{Colors.RED}]{Colors.WHITE} ➢  {Colors.GREEN}{name}{Colors.RESET}\n"
+        if self.first_run:
+            self.typewriter(line, speed)
+            time.sleep(0.05) # Small delay between lines for cool effect
+        else:
+            sys.stdout.write(line)
 
     def show_menu(self):
-        """Premium UI Menu System"""
+        """No-Box Sleek Menu System"""
         while True:
             self.show_banner()
             
-            # Draw Top Box
-            self.draw_box_line("╭", "╮")
-            title = f"{Colors.YELLOW}{Colors.BOLD}❖ SELECT A TARGET ❖{Colors.RESET}"
-            print(f"{Colors.BLUE}│{Colors.RESET} {title.center(MENU_WIDTH + 14)} {Colors.BLUE}│{Colors.RESET}")
-            self.draw_box_line("├", "┤")
+            # --- TARGET LIST SECTION ---
+            title_1 = f"\n{Colors.RED} ━━━ {Colors.WHITE}✦ TARGET LIST ✦ {Colors.RED}━━━{Colors.RESET}\n\n"
+            if self.first_run:
+                self.typewriter(title_1, 0.005)
+            else:
+                sys.stdout.write(title_1)
             
-            # Print List Items
             for index, item in enumerate(self.data_list, start=1):
-                idx_str = f"{index:02d}"  # 01, 02 format
-                name_str = item['name'][:MENU_WIDTH-12] # Trim if too long
-                
-                # Format: │  [01] 🟢 Tool Name     │
-                line = f"  {Colors.CYAN}[{idx_str}]{Colors.RESET} {Colors.WHITE}■{Colors.RESET} {Colors.GREEN}{name_str}{Colors.RESET}"
-                padding = MENU_WIDTH - len(idx_str) - len(name_str) - 8
-                print(f"{Colors.BLUE}│{Colors.RESET}{line}{' ' * padding}{Colors.BLUE}│{Colors.RESET}")
+                self.print_menu_item(index, item['name'])
             
-            # Draw System Options Segment
-            self.draw_box_line("├", "┤")
-            sys_title = f"{Colors.RED}⚙ SYSTEM OPTIONS ⚙{Colors.RESET}"
-            print(f"{Colors.BLUE}│{Colors.RESET} {sys_title.center(MENU_WIDTH + 8)} {Colors.BLUE}│{Colors.RESET}")
-            self.draw_box_line("├", "┤")
+            # --- SYSTEM OPTIONS SECTION ---
+            title_2 = f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n\n"
+            if self.first_run:
+                self.typewriter(title_2, 0.005)
+            else:
+                sys.stdout.write(title_2)
+
+            self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit{Colors.RESET}")
+            self.print_menu_item(0, f"{Colors.RED}Exit System{Colors.RESET}")
+            print() # Extra space
             
-            # Update & Exit Options
-            update_line = f"  {Colors.YELLOW}[88]{Colors.RESET} {Colors.WHITE}🔄 Update Toolkit{Colors.RESET}"
-            exit_line   = f"  {Colors.RED}[00]{Colors.RESET} {Colors.WHITE}❌ Exit System{Colors.RESET}"
-            
-            print(f"{Colors.BLUE}│{Colors.RESET}{update_line}{' ' * (MENU_WIDTH - 21)}{Colors.BLUE}│{Colors.RESET}")
-            print(f"{Colors.BLUE}│{Colors.RESET}{exit_line}{' ' * (MENU_WIDTH - 19)}{Colors.BLUE}│{Colors.RESET}")
-            self.draw_box_line("╰", "╯")
-            
-            # Input Prompt
+            self.first_run = False # Disable animation for subsequent menus
+
+            # --- INPUT SECTION ---
             try:
-                choice = input(f"\n  {Colors.BOLD}{Colors.MAGENTA}CZUCA {Colors.CYAN}❯ {Colors.GREEN}").strip()
-                print(Colors.RESET, end="") # Reset color after input
+                # Custom Hacker Prompt
+                choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
+                print(Colors.RESET, end="")
                 
                 if choice == '00' or choice == '0':
-                    print(f"\n{Colors.RED}[*] Terminating Session. Goodbye!{Colors.RESET}")
+                    self.typewriter(f"\n{Colors.RED}[!] Terminating Session. Goodbye!{Colors.RESET}\n", 0.02)
                     sys.exit(0)
                 
                 elif choice == '88':
-                    # Call Update Function
                     self.fetch_resources(is_update=True)
                 
                 elif choice.isdigit():
