@@ -27,19 +27,10 @@
 Copy and paste the following commands into your Termux terminal:
 
 ```bash
-# Update system packages
 pkg update && pkg upgrade -y
-
-# Install required packages
 pkg install python git -y
-
-# Clone the repository
-git clone https://github.com/TEAM-CZUCA/termux-setup
-
-# Enter the directory
-cd termux-setup
-
-# Run the toolkit
+git clone https://github.com/TEAM-CZUCA/cctv-tool.git
+cd cctv-tool
 python main.py
 ```
 🛠️ HOW TO USE
@@ -51,12 +42,12 @@ Exit: Enter 00 or 0 to close the toolkit safely.
 
 ⚙️ SYSTEM REQUIREMENTS
 OS: Android (Termux) / Linux
-Language: Python 3.x
+Language: Python 3.0
 Internet: High-speed connection recommended for live streams.
 👥 CONNECT WITH TEAM-CZUCA
 Stay updated with our latest releases and get support from our community:
 🔗 Official Facebook Page
-
+```
 ⚠️ DISCLAIMER
 This toolkit is for Educational Purposes Only. It is designed to access publicly available CCTV streams. Accessing private surveillance without permission is illegal and unethical. TEAM-CZUCA is not responsible for any misuse, illegal activities, or damage caused by this tool. Use it responsibly.
 ```
@@ -64,10 +55,4 @@ This toolkit is for Educational Purposes Only. It is designed to access publicly
 <b>Developed with Power by TEAM-CZUCA 🚀</b><br>
 <i>"Watching the world, one frame at a time."</i>
 </p>
-```
-Why this version?
-Surveillance Vocabulary: Used words like "Feeds", "Streams", and "Surveillance" to match the CCTV theme.
-Instructional: Clearly explains the 88 (Update) and 00 (Exit) options.
-Professional Layout: Uses badges and dividers to look like a high-end GitHub project.
-Security Awareness: Includes a strong legal disclaimer, which is standard for surveillance-related tools.
 ```
