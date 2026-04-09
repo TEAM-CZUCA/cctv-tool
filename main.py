@@ -6,10 +6,12 @@ import urllib.error
 import webbrowser
 
 # ==========================================
-# ⚙️ CONFIGURATION
+# ⚙️ CONFIGURATION (TEAM-CZUCA URLs)
 # ==========================================
-# আপনার GitHub Raw URL এখানে দিন
-REMOTE_URL = "https://raw.githubusercontent.com/YourUsername/YourRepo/main/list.txt"
+# GitHub Raw URLs (To fetch exact text content)
+REMOTE_BANNER_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/banner.txt"
+REMOTE_LIST_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/wordlist/main/list.txt"
+
 LOCAL_LIST = "list.txt"
 BANNER_FILE = "banner.txt"
 
@@ -31,36 +33,49 @@ class Colors:
 class TermuxToolkit:
     def __init__(self):
         self.data_list = []
+        self.banner_text = ""
 
     def clear_screen(self):
         """Screen পরিষ্কার করার function"""
         os.system('clear' if os.name == 'posix' else 'cls')
 
     def show_banner(self):
-        """banner.txt থেকে ASCII Banner দেখানোর function"""
+        """ASCII Banner দেখানোর function"""
         self.clear_screen()
-        try:
-            if os.path.exists(BANNER_FILE):
-                with open(BANNER_FILE, 'r', encoding='utf-8') as f:
-                    banner = f.read()
-                    print(f"{Colors.CYAN}{Colors.BOLD}{banner}{Colors.RESET}")
-            else:
-                print(f"{Colors.CYAN}{Colors.BOLD}=== ADVANCED TERMUX TOOLKIT ==={Colors.RESET}")
-        except Exception as e:
-            print(f"{Colors.RED}[!] Banner Load Error: {e}{Colors.RESET}")
+        if self.banner_text:
+            print(f"{Colors.CYAN}{Colors.BOLD}{self.banner_text}{Colors.RESET}")
+        else:
+            print(f"{Colors.CYAN}{Colors.BOLD}=== TEAM-CZUCA ADVANCED TOOLKIT ==={Colors.RESET}")
         print("\n")
 
-    def fetch_data(self):
-        """Remote URL থেকে ডাটা লোড করা, ফেইল করলে Local File ব্যবহার করা"""
-        print(f"{Colors.YELLOW}[*] Fetching data from remote server...{Colors.RESET}")
+    def fetch_resources(self):
+        """Remote URL থেকে Banner এবং List লোড করা ও Offline-এর জন্য Save করা"""
+        print(f"{Colors.YELLOW}[*] Fetching resources from TEAM-CZUCA GitHub...{Colors.RESET}")
         
+        # 1. Fetch Banner
         try:
-            # Request remote data (timeout 5 seconds)
-            req = urllib.request.Request(REMOTE_URL, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req, timeout=5) as response:
+            req_banner = urllib.request.Request(REMOTE_BANNER_URL, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req_banner, timeout=5) as response:
+                self.banner_text = response.read().decode('utf-8')
+                # Save as fallback
+                with open(BANNER_FILE, 'w', encoding='utf-8') as f:
+                    f.write(self.banner_text)
+        except Exception:
+            # Fallback to local banner if remote fails
+            if os.path.exists(BANNER_FILE):
+                with open(BANNER_FILE, 'r', encoding='utf-8') as f:
+                    self.banner_text = f.read()
+
+        # 2. Fetch List
+        try:
+            req_list = urllib.request.Request(REMOTE_LIST_URL, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req_list, timeout=5) as response:
                 content = response.read().decode('utf-8')
                 self._parse_data(content)
-                print(f"{Colors.GREEN}[+] Data loaded successfully from Online!{Colors.RESET}")
+                # Save as fallback
+                with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print(f"{Colors.GREEN}[+] Resources loaded successfully from Online!{Colors.RESET}")
                 time.sleep(1)
         except (urllib.error.URLError, Exception) as e:
             print(f"{Colors.RED}[!] Network fail: {e}{Colors.RESET}")
@@ -85,10 +100,9 @@ class TermuxToolkit:
 
     def _parse_data(self, raw_text):
         """Raw text কে Name এবং URL এ ভাগ করা"""
-        self.data_list = []
+        self.data_list =[]
         lines = raw_text.strip().splitlines()
         for line in lines:
-            # Ignore empty lines and comments
             if not line.strip() or line.startswith("#"):
                 continue
             
@@ -157,7 +171,7 @@ class TermuxToolkit:
 def main():
     app = TermuxToolkit()
     app.clear_screen()
-    app.fetch_data()
+    app.fetch_resources()
     app.show_menu()
 
 if __name__ == "__main__":
