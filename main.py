@@ -4,7 +4,6 @@
 import os
 import sys
 import time
-import shutil
 import urllib.request
 import urllib.error
 import subprocess
@@ -17,14 +16,15 @@ REMOTE_BANNER_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/m
 REMOTE_LIST_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/wordlist/main/list.txt"
 
 # Core Script URL (To Auto-Update This Python File)
-# আপনি আপনার main.py গিটহাবে আপলোড করে এখানকার লিংকটি আপডেট করে দিবেন
 REMOTE_CORE_URL = "https://raw.githubusercontent.com/TEAM-CZUCA/termux-setup/main/main.py"
+
+# Facebook Page URL
+FB_PAGE_URL = "https://www.facebook.com/CyberZulfiqarUnderCoverAgency"
 
 # Termux Secure Storage Paths
 HOME_DIR = os.environ.get('HOME', os.path.expanduser('~'))
 APP_DIR = os.path.join(HOME_DIR, '.czuca_toolkit')
 
-# Create directory if it doesn't exist
 if not os.path.exists(APP_DIR):
     os.makedirs(APP_DIR)
 
@@ -71,6 +71,22 @@ class TermuxToolkit:
             idx = (idx + 1) % len(chars)
             time.sleep(0.08)
         sys.stdout.write(f"\r{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.RESET} {Colors.WHITE}{text} - {Colors.GREEN}Done!{' '*10}{Colors.RESET}\n")
+
+    def open_facebook_page(self):
+        """টুলটি যতবার রান হবে, ততবারই Facebook Page Open করবে"""
+        self.clear_screen()
+        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Redirecting to TEAM-CZUCA Official Facebook Page...{Colors.RESET}")
+        time.sleep(1)
+        try:
+            # সরাসরি Android Intent/App এ খোলার চেষ্টা
+            subprocess.run(['termux-open-url', FB_PAGE_URL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            try:
+                import webbrowser
+                webbrowser.open(FB_PAGE_URL)
+            except:
+                pass
+        time.sleep(2)
 
     def show_banner(self):
         self.clear_screen()
@@ -123,18 +139,18 @@ class TermuxToolkit:
 
         # 3. Fetch Core Script (Auto-Update main.py itself)
         if is_update:
-            self.animated_loading("Checking for Core Software Updates...", 1.2)
+            self.animated_loading("Updating Core Software (main.py)...", 1.5)
             try:
                 req_core = urllib.request.Request(REMOTE_CORE_URL, headers={'User-Agent': 'Mozilla/5.0'})
                 with urllib.request.urlopen(req_core, timeout=5) as response:
                     core_code = response.read().decode('utf-8')
-                    # Verification Check (To ensure we don't download empty file)
+                    # Verification Check (যাতে ফাইল এম্পটি না হয়)
                     if "class TermuxToolkit:" in core_code:
                         with open(os.path.abspath(__file__), 'w', encoding='utf-8') as f:
                             f.write(core_code)
                         print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Core Script Updated Successfully!{Colors.RESET}")
             except Exception:
-                pass # Ignore if core update fails
+                pass
 
         if is_update:
             print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} System Update Completed!{Colors.RESET}")
@@ -194,22 +210,6 @@ class TermuxToolkit:
         else:
             sys.stdout.write(line)
 
-    def install_global_shortcut(self):
-        """Install toolkit to Termux bin directory for global access"""
-        prefix = os.environ.get('PREFIX', '/data/data/com.termux/files/usr')
-        bin_path = os.path.join(prefix, 'bin', 'czuca')
-        
-        print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Installing Global Command...{Colors.RESET}")
-        time.sleep(1)
-        
-        try:
-            shutil.copyfile(os.path.abspath(__file__), bin_path)
-            os.chmod(bin_path, 0o755) # Make it executable
-            print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Success! You can now just type {Colors.GREEN}'czuca'{Colors.WHITE} anywhere to run this toolkit!{Colors.RESET}")
-        except Exception as e:
-            print(f"{Colors.RED}[!] Failed to create global command: {e}{Colors.RESET}")
-        time.sleep(3)
-
     def show_menu(self):
         while True:
             self.show_banner()
@@ -231,8 +231,7 @@ class TermuxToolkit:
             else:
                 sys.stdout.write(title_2)
 
-            self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit (Data & Core){Colors.RESET}")
-            self.print_menu_item(99, f"{Colors.CYAN}Create Global Command (czuca){Colors.RESET}")
+            self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit (Code + Data){Colors.RESET}")
             self.print_menu_item(0, f"{Colors.RED}Exit System{Colors.RESET}")
             print()
             
@@ -247,14 +246,15 @@ class TermuxToolkit:
                     self.typewriter(f"\n{Colors.RED}[!] Terminating Session. Goodbye!{Colors.RESET}\n", 0.02)
                     sys.exit(0)
                 
-                elif choice == '99':
-                    self.install_global_shortcut()
-                
                 elif choice == '88':
+                    # ==========================================
+                    # 🔄 AUTO UPDATE & RESTART
+                    # ==========================================
                     self.fetch_resources(is_update=True)
-                    print(f"\n{Colors.RED}[{Colors.GREEN}↻{Colors.RED}]{Colors.WHITE} Applying Core Updates & Restarting...{Colors.RESET}")
+                    print(f"\n{Colors.RED}[{Colors.GREEN}↻{Colors.RED}]{Colors.WHITE} Applying Core Updates & Restarting System...{Colors.RESET}")
                     time.sleep(1.5)
-                    # Hard Restart Tool to Load New Core Source Code
+                    
+                    # Hard Restart the Python File (Will trigger FB page open again)
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
                 
                 elif choice.isdigit():
@@ -278,9 +278,10 @@ class TermuxToolkit:
 # ==========================================
 def main():
     app = TermuxToolkit()
+    app.open_facebook_page() # Every time it runs, FB page will open
     app.clear_screen()
-    app.fetch_resources()
-    app.show_menu()
+    app.fetch_resources()    # Then fetch resources
+    app.show_menu()          # Finally show menu
 
 if __name__ == "__main__":
     main()
