@@ -1,33 +1,36 @@
-# 🚀 TEAM-CZUCA CCTV TOOL
+# 📹 TEAM-CZUCA CCTV EXPLORER 🛰️
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?style=for-the-badge&logo=python)
-![Termux](https://img.shields.io/badge/Platform-Termux-green?style=for-the-badge&logo=android)
-![License](https://img.shields.io/badge/License-MIT-red?style=for-the-badge)
-
-A high-performance, neon-styled Termux toolkit developed by **TEAM-CZUCA**. This tool features a dynamic multi-column menu, live updates via Git, and a professional UI/UX for cyber security enthusiasts and automation lovers.
-
----
-
-## ✨ Features
-
-- 🎨 **Neon UI:** Stunning ANSI 256-color system with bold styling.
-- 📊 **Smart Menu:** Automatic multi-column layout (max 10 rows per column) for large target lists.
-- 🔄 **Auto Update:** Built-in `git pull` method (Option 88) to keep the core and data synced.
-- ⚡ **Animations:** Typewriter effect and professional loading animations.
-- 🌐 **FB Integration:** Direct redirection to the official **TEAM-CZUCA** Facebook page.
-- 📂 **Secure Cache:** Stores configuration and wordlists locally for offline access.
+<p align="center">
+  <img src="https://img.shields.io/badge/SURVEILLANCE-SYSTEM-red?style=for-the-badge&logo=spyder" alt="Surveillance">
+  <img src="https://img.shields.io/badge/TOOL-CCTV-black?style=for-the-badge&logo=securityscorecard" alt="CCTV">
+  <img src="https://img.shields.io/badge/TEAM-CZUCA-green?style=for-the-badge&logo=android" alt="Team">
+</p>
 
 ---
 
-## 📥 Installation
+## ⚡ ABOUT THE TOOL
+**CZUCA CCTV EXPLORER** is a specialized surveillance toolkit developed by **TEAM-CZUCA**. This tool allows security enthusiasts and researchers to explore publicly available CCTV feeds, IP cameras, and global security streams directly from the Termux terminal. It is built with a high-performance interface, focusing on speed and ease of use.
 
-Open your **Termux** app and paste the following commands:
+---
+
+## ✨ EXCLUSIVE FEATURES
+- 🛰️ **Global Database:** Access a massive list of public CCTV feeds from various countries.
+- 📊 **Dynamic Multi-Column Layout:** A smart menu system that organizes targets in rows of 10 for better visibility.
+- 🔄 **Live Git-Sync:** Use `Option 88` to automatically pull the latest code changes and new camera lists directly from the GitHub repository.
+- 🎨 **Neon Dashboard:** A professional terminal UI featuring an ANSI-256 neon color scheme.
+- ⚡ **Lightweight & Fast:** Optimized for Termux to ensure smooth operation on mobile devices.
+
+---
+
+## 📥 INSTALLATION (TERMUX)
+
+Copy and paste the following commands into your Termux terminal:
 
 ```bash
-# Update and Upgrade packages
+# Update system packages
 pkg update && pkg upgrade -y
 
-# Install Python and Git
+# Install required packages
 pkg install python git -y
 
 # Clone the repository
@@ -38,20 +41,32 @@ cd termux-setup
 
 # Run the toolkit
 python main.py
-🛠️ How to Use
-Launch: Run python main.py.
-Browse: View targets in a clean row-column format.
-Select: Enter the Target ID (e.g., 01, 05) to launch a link.
-Update: Enter 88 to pull the latest changes from GitHub automatically.
-Exit: Enter 00 or 0 to terminate the session.
-⚙️ Configuration
-The toolkit uses the following remote resources for real-time updates:
-Banner: banner.txt
-Target List: list.txt
-👥 Connect with Us
-Stay updated and get support through our official Facebook page:
-👉 Cyber Zulfiqar UnderCover Agency
-⚠️ Disclaimer
-This tool is for educational purposes only. TEAM-CZUCA is not responsible for any misuse or damage caused by this toolkit. Use it ethically and responsibly.
-<p align="center">Made with ❤️ by <b>TEAM-CZUCA</b></p>
 ```
+🛠️ HOW TO USE
+Launch: Start the tool using python main.py.
+Explore: Browse the Target List organized in clean columns.
+Select: Type the Target ID (e.g., 01, 12) to open the specific camera feed in your browser.
+Update: Enter 88 to sync with our servers and pull new updates via git pull.
+Exit: Enter 00 or 0 to close the toolkit safely.
+
+⚙️ SYSTEM REQUIREMENTS
+OS: Android (Termux) / Linux
+Language: Python 3.x
+Internet: High-speed connection recommended for live streams.
+👥 CONNECT WITH TEAM-CZUCA
+Stay updated with our latest releases and get support from our community:
+🔗 Official Facebook Page
+```
+⚠️ DISCLAIMER
+This toolkit is for Educational Purposes Only. It is designed to access publicly available CCTV streams. Accessing private surveillance without permission is illegal and unethical. TEAM-CZUCA is not responsible for any misuse, illegal activities, or damage caused by this tool. Use it responsibly.
+```
+<p align="center">
+<b>Developed with Power by TEAM-CZUCA 🚀</b><br>
+<i>"Watching the world, one frame at a time."</i>
+</p>
+```
+Why this version?
+Surveillance Vocabulary: Used words like "Feeds", "Streams", and "Surveillance" to match the CCTV theme.
+Instructional: Clearly explains the 88 (Update) and 00 (Exit) options.
+Professional Layout: Uses badges and dividers to look like a high-end GitHub project.
+Security Awareness: Includes a strong legal disclaimer, which is standard for surveillance-related tools.
