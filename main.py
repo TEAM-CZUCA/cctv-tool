@@ -3,7 +3,7 @@ import sys
 import time
 import urllib.request
 import urllib.error
-import webbrowser
+import subprocess
 
 # ==========================================
 # ⚙️ CONFIGURATION (TEAM-CZUCA URLs)
@@ -115,14 +115,23 @@ class TermuxToolkit:
             sys.exit(1)
 
     def open_link(self, url):
-        """URL Browser এ Open করার function"""
+        """সরাসরি ফোনের ডিফল্ট Browser এ URL Open করার function"""
         if url.startswith("http://") or url.startswith("https://"):
-            print(f"{Colors.GREEN}[+] Opening URL: {url}{Colors.RESET}")
+            print(f"{Colors.GREEN}[+] Opening URL in Phone Browser: {url}{Colors.RESET}")
             try:
-                webbrowser.open(url)
-                print(f"{Colors.BLUE}[*] Check your browser!{Colors.RESET}")
+                # Termux-এর নিজস্ব সিস্টেম কমান্ড ব্যবহার করে ফোনের ব্রাউজার ওপেন করা
+                subprocess.run(['termux-open-url', url], check=True)
+                print(f"{Colors.BLUE}[*] Link sent to your phone's browser!{Colors.RESET}")
+            except FileNotFoundError:
+                # যদি স্ক্রিপ্টটি Termux ছাড়া অন্য পিসিতে রান করা হয় তার জন্য Fallback
+                try:
+                    import webbrowser
+                    webbrowser.open(url)
+                    print(f"{Colors.BLUE}[*] Opened via standard webbrowser fallback.{Colors.RESET}")
+                except Exception as e:
+                    print(f"{Colors.RED}[!] Failed to open browser: {e}{Colors.RESET}")
             except Exception as e:
-                print(f"{Colors.RED}[!] Failed to open browser: {e}{Colors.RESET}")
+                print(f"{Colors.RED}[!] Error executing termux-open-url: {e}{Colors.RESET}")
         else:
             print(f"{Colors.RED}[!] Invalid URL format: {url}{Colors.RESET}")
         
