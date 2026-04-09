@@ -23,7 +23,6 @@ class Colors:
     GREEN = '\033[38;5;46m'     # Matrix Green
     YELLOW = '\033[38;5;226m'   # Warning Yellow
     CYAN = '\033[38;5;51m'      # Neon Blue/Cyan
-    DARK_GRAY = '\033[38;5;240m'# Divider Gray
     BOLD = '\033[1m'
     RESET = '\033[0m'
 
@@ -34,7 +33,7 @@ class TermuxToolkit:
     def __init__(self):
         self.data_list = []
         self.banner_text = ""
-        self.first_run = True # To animate only on startup
+        self.first_run = True # To animate only on startup/restart
 
     def clear_screen(self):
         os.system('clear' if os.name == 'posix' else 'cls')
@@ -77,8 +76,9 @@ class TermuxToolkit:
     def fetch_resources(self, is_update=False):
         if is_update:
             print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Initiating Live Update...{Colors.RESET}")
-        
-        self.animated_loading("Connecting to TEAM-CZUCA Servers...", 1.5)
+            self.animated_loading("Connecting to TEAM-CZUCA Servers...", 1.5)
+        else:
+            self.animated_loading("Initializing System & Checking Servers...", 1.0)
 
         # Fetch Banner
         try:
@@ -100,7 +100,9 @@ class TermuxToolkit:
                 self._parse_data(content)
                 with open(LOCAL_LIST, 'w', encoding='utf-8') as f:
                     f.write(content)
-                self.animated_loading("Downloading Latest Payloads...", 1.2)
+                
+                if is_update:
+                    self.animated_loading("Downloading Latest Payloads...", 1.2)
         except (urllib.error.URLError, Exception) as e:
             print(f"{Colors.RED}[!] Network fail: {e}{Colors.RESET}")
             print(f"{Colors.YELLOW}[*] Switching to Offline Mode...{Colors.RESET}")
@@ -109,7 +111,7 @@ class TermuxToolkit:
 
         if is_update:
             print(f"{Colors.RED}[{Colors.GREEN}✔{Colors.RED}]{Colors.WHITE} Update Completed Successfully!{Colors.RESET}")
-            time.sleep(1.5)
+            time.sleep(1)
 
     def _load_local_data(self):
         if os.path.exists(LOCAL_LIST):
@@ -164,7 +166,7 @@ class TermuxToolkit:
         line = f"   {Colors.RED}[{Colors.WHITE}{idx_str}{Colors.RED}]{Colors.WHITE} ➢  {Colors.GREEN}{name}{Colors.RESET}\n"
         if self.first_run:
             self.typewriter(line, speed)
-            time.sleep(0.05) # Small delay between lines for cool effect
+            time.sleep(0.05)
         else:
             sys.stdout.write(line)
 
@@ -192,13 +194,12 @@ class TermuxToolkit:
 
             self.print_menu_item(88, f"{Colors.YELLOW}Update Toolkit{Colors.RESET}")
             self.print_menu_item(0, f"{Colors.RED}Exit System{Colors.RESET}")
-            print() # Extra space
+            print()
             
-            self.first_run = False # Disable animation for subsequent menus
+            self.first_run = False # Disable animation for regular usage
 
             # --- INPUT SECTION ---
             try:
-                # Custom Hacker Prompt
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
                 print(Colors.RESET, end="")
                 
@@ -207,7 +208,14 @@ class TermuxToolkit:
                     sys.exit(0)
                 
                 elif choice == '88':
+                    # ==========================================
+                    # 🔄 AUTO RESTART TRIGGER
+                    # ==========================================
                     self.fetch_resources(is_update=True)
+                    print(f"\n{Colors.RED}[{Colors.GREEN}↻{Colors.RED}]{Colors.WHITE} Applying Updates & Auto-Restarting System...{Colors.RESET}")
+                    time.sleep(1.5)
+                    self.first_run = True # এটি মেনুর অ্যানিমেশন আবার চালু করবে
+                    continue # এটি অটোমেটিক রিস্টার্ট করে মেনুতে ফিরিয়ে আনবে
                 
                 elif choice.isdigit():
                     choice_idx = int(choice)
