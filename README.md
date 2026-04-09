@@ -64,7 +64,7 @@ This toolkit is for Educational Purposes Only. It is designed to access publicly
 <b>Developed with Power by TEAM-CZUCA 🚀</b><br>
 <i>"Watching the world, one frame at a time."</i>
 </p>
-```
+
 Why this version?
 Surveillance Vocabulary: Used words like "Feeds", "Streams", and "Surveillance" to match the CCTV theme.
 Instructional: Clearly explains the 88 (Update) and 00 (Exit) options.
