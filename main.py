@@ -183,7 +183,7 @@ class TermuxToolkit:
                             print(row_line)
 
             print(f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n")
-            sys_options = f"  {Colors.RED}[{Colors.WHITE}88{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
+            sys_options = f"  {Colors.RED}[{Colors.WHITE}U{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
             sys_options += f"{Colors.RED}[{Colors.WHITE}00{Colors.RED}]{Colors.WHITE} ➢ {Colors.RED}Exit System{Colors.RESET}"
             
             if self.first_run:
@@ -197,7 +197,7 @@ class TermuxToolkit:
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
                 if choice in ['0', '00']:
                     sys.exit(0)
-                elif choice == '88':
+                elif choice == 'U':
                     self.update_toolkit()
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
                 elif choice.isdigit():
