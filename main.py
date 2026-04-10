@@ -171,14 +171,14 @@ class TermuxToolkit:
     def show_menu(self):
         while True:
             self.show_banner()
-            print(f"{Colors.RED} ━━━ {Colors.WHITE}✦ TARGET LIST ✦ {Colors.RED}━━━{Colors.RESET}\n")
+            print(f"{Colors.RED} ━━━ {Colors.WHITE}✦ CAMERA LIST ✦ {Colors.RED}━━━{Colors.RESET}\n")
             
             # --- MULTI-COLUMN LOGIC (MAX 10 ROWS) ---
-            rows_limit = 15
+            rows_limit = 20
             total_items = len(self.data_list)
             
             if total_items == 0:
-                print(f"    {Colors.RED}[!] No targets found in list.txt{Colors.RESET}")
+                print(f"    {Colors.RED}[!] No Cameras found....{Colors.RESET}")
             else:
                 for i in range(rows_limit):
                     row_line = ""
@@ -196,7 +196,7 @@ class TermuxToolkit:
 
             # --- SYSTEM OPTIONS ---
             print(f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n")
-            sys_options = f"  {Colors.RED}[{Colors.WHITE}88{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Full Update{Colors.RESET}    "
+            sys_options = f"  {Colors.RED}[{Colors.WHITE}88{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
             sys_options += f"{Colors.RED}[{Colors.WHITE}00{Colors.RED}]{Colors.WHITE} ➢ {Colors.RED}Exit System{Colors.RESET}"
             
             if self.first_run:
@@ -210,7 +210,7 @@ class TermuxToolkit:
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
                 if choice in ['0', '00']:
                     sys.exit(0)
-                elif choice == '88':
+                elif choice == 'U':
                     self.update_toolkit()
                     # আপডেট শেষে টুল রিস্টার্ট করা যাতে নতুন লিস্ট লোড হয়
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
