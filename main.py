@@ -174,7 +174,7 @@ class TermuxToolkit:
             print(f"{Colors.RED} ━━━ {Colors.WHITE}✦ TARGET LIST ✦ {Colors.RED}━━━{Colors.RESET}\n")
             
             # --- MULTI-COLUMN LOGIC (MAX 10 ROWS) ---
-            rows_limit = 10
+            rows_limit = 15
             total_items = len(self.data_list)
             
             if total_items == 0:
