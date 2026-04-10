@@ -80,7 +80,7 @@ class TermuxToolkit:
             self.banner_text = "=== TEAM-CZUCA ADVANCED TOOLKIT ==="
         lines = self.banner_text.strip().splitlines()
         for line in lines:
-            # ব্যানারটি এখন সম্পূর্ণ সাদা (WHITE) দেখাবে
+            # ব্যানারটি সম্পূর্ণ সাদা (White) করার লজিক
             print(f"{Colors.WHITE}{Colors.BOLD}{line}{Colors.RESET}")
         print()
 
@@ -183,7 +183,7 @@ class TermuxToolkit:
                             print(row_line)
 
             print(f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n")
-            sys_options = f"  {Colors.RED}[{Colors.WHITE}U{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
+            sys_options = f"  {Colors.RED}[{Colors.WHITE}88{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
             sys_options += f"{Colors.RED}[{Colors.WHITE}00{Colors.RED}]{Colors.WHITE} ➢ {Colors.RED}Exit System{Colors.RESET}"
             
             if self.first_run:
@@ -197,7 +197,8 @@ class TermuxToolkit:
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
                 if choice in ['0', '00']:
                     sys.exit(0)
-                elif choice == 'U':
+                # এখানে logic পরিবর্তন করা হয়েছে যাতে U/u এবং 88 তিনটাই কাজ করে
+                elif choice.upper() == 'U' or choice == '88':
                     self.update_toolkit()
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
                 elif choice.isdigit():
@@ -210,6 +211,9 @@ class TermuxToolkit:
             except KeyboardInterrupt:
                 sys.exit(0)
 
+# ==========================================
+# 🚀 START
+# ==========================================
 if __name__ == "__main__":
     app = TermuxToolkit()
     app.open_facebook_page() 
