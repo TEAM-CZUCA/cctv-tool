@@ -79,14 +79,12 @@ class TermuxToolkit:
         if not self.banner_text:
             self.banner_text = "=== TEAM-CZUCA ADVANCED TOOLKIT ==="
         lines = self.banner_text.strip().splitlines()
-        for i, line in enumerate(lines):
-            color = Colors.RED if i % 2 == 0 else Colors.WHITE
-            print(f"{color}{Colors.BOLD}{line}{Colors.RESET}")
+        for line in lines:
+            # ব্যানারটি এখন সম্পূর্ণ সাদা (WHITE) দেখাবে
+            print(f"{Colors.WHITE}{Colors.BOLD}{line}{Colors.RESET}")
         print()
 
     def fetch_resources(self):
-        """প্রাথমিক ডাটা লোড (লোকাল এবং রিমোট)"""
-        # Load Banner from local or download
         try:
             if os.path.exists(BANNER_FILE):
                 with open(BANNER_FILE, 'r', encoding='utf-8') as f:
@@ -96,31 +94,23 @@ class TermuxToolkit:
         except:
             pass
         
-        # Load List from local cache
         if os.path.exists(LOCAL_LIST):
             self._load_local_data()
         else:
-            # First time download if not exists
             self.refresh_data_files()
 
     def refresh_data_files(self):
-        """সরাসরি সার্ভার থেকে লেটেস্ট লিস্ট এবং ব্যানার ডাউনলোড করার মেথড"""
         try:
-            # Download Banner
             urllib.request.urlretrieve(REMOTE_BANNER_URL, BANNER_FILE)
-            # Download Wordlist/Target List
             urllib.request.urlretrieve(REMOTE_LIST_URL, LOCAL_LIST)
-            # রিফ্রেশ করার পর ডাটা পুনরায় পার্স করা
             self._load_local_data()
             return True
         except:
             return False
 
     def update_toolkit(self):
-        """Git Pull এবং ডাটা ফাইল সিঙ্ক করার মেথড (Option 88)"""
         print(f"\n{Colors.RED}[{Colors.WHITE}*{Colors.RED}]{Colors.WHITE} Initializing Deep System Update...{Colors.RESET}")
         
-        # ১. গিট পুল এর মাধ্যমে কোড আপডেট
         self.animated_loading("Syncing Core Software via Git", 1.5)
         git_updated = False
         try:
@@ -133,7 +123,6 @@ class TermuxToolkit:
         except Exception as e:
             print(f"{Colors.RED}[!] Git Error: {e}{Colors.RESET}")
 
-        # ২. সার্ভার থেকে নতুন লিস্ট এবং ব্যানার ডাউনলোড (এটি সবসময় কাজ করবে)
         self.animated_loading("Fetching Latest Target Wordlists", 1.5)
         data_updated = self.refresh_data_files()
 
@@ -173,7 +162,6 @@ class TermuxToolkit:
             self.show_banner()
             print(f"{Colors.RED} ━━━ {Colors.WHITE}✦ CAMERA LIST ✦ {Colors.RED}━━━{Colors.RESET}\n")
             
-            # --- MULTI-COLUMN LOGIC (MAX 10 ROWS) ---
             rows_limit = 20
             total_items = len(self.data_list)
             
@@ -194,7 +182,6 @@ class TermuxToolkit:
                         else:
                             print(row_line)
 
-            # --- SYSTEM OPTIONS ---
             print(f"\n{Colors.RED} ━━━ {Colors.WHITE}⚙ SYSTEM OPTIONS ⚙ {Colors.RED}━━━{Colors.RESET}\n")
             sys_options = f"  {Colors.RED}[{Colors.WHITE}88{Colors.RED}]{Colors.WHITE} ➢ {Colors.YELLOW}Update{Colors.RESET}    "
             sys_options += f"{Colors.RED}[{Colors.WHITE}00{Colors.RED}]{Colors.WHITE} ➢ {Colors.RED}Exit System{Colors.RESET}"
@@ -210,9 +197,8 @@ class TermuxToolkit:
                 choice = input(f" {Colors.RED}CZUCA {Colors.WHITE}❯ {Colors.GREEN}").strip()
                 if choice in ['0', '00']:
                     sys.exit(0)
-                elif choice == 'U':
+                elif choice == '88':
                     self.update_toolkit()
-                    # আপডেট শেষে টুল রিস্টার্ট করা যাতে নতুন লিস্ট লোড হয়
                     os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)])
                 elif choice.isdigit():
                     choice_idx = int(choice)
@@ -224,9 +210,6 @@ class TermuxToolkit:
             except KeyboardInterrupt:
                 sys.exit(0)
 
-# ==========================================
-# 🚀 START
-# ==========================================
 if __name__ == "__main__":
     app = TermuxToolkit()
     app.open_facebook_page() 
